@@ -1,5 +1,5 @@
 ---
-- name: Remove httpd webserver whith testfile and close port
+- name: Change GRUB configuration
   hosts: grub
   become: yes
   tasks:
