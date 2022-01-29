@@ -16,10 +16,14 @@
       name: httpd 
       state: started
       
-  - name: Print service facts
+  - name: Check httpd status
+    shell: systemctl status httpd
+    register: result
+    ignore_errors: yes
+  - name: showing report
     debug:
-        var: ansible_facts.services.httpd
-
+     var: result
+     
   - name: Install firewalld packages 
     yum:
       name: firewalld

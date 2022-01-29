@@ -1,0 +1,27 @@
+---
+- name: Remove httpd webserver whith testfile and close port
+  hosts: grub
+  become: yes
+  tasks:
+    - name: Add GRUB net.ifnames boot parameters
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^(GRUB_CMDLINE_LINUX=(?!.* net.ifnames)\"[^\"]+)(\".*)'
+        line: '\1 net.ifnames=0\2'
+        backrefs: yes
+
+    - name: Add GRUB biosdevname boot parameters
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^(GRUB_CMDLINE_LINUX=(?!.* biosdevname)\"[^\"]+)(\".*)'
+        line: '\1 biosdevname=0\2'
+        backrefs: yes
+
+    - name: Install grub2-tools packages 
+      yum:
+        name: grub2-tools
+        state: present
+      
+    - name: Write grub configuration file
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+
