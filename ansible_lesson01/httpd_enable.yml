@@ -1,0 +1,35 @@
+---
+- name: This sets up an httpd webserver whith testfile and open port
+  hosts: nodes
+  become: yes
+  tasks:
+  - name: Install apache packages 
+    yum:
+      name: httpd
+      state: present
+  - name: Creating a file /var/www/html/index.html with content
+    copy:
+      dest: "/var/www/html/index.html"
+      content: “Welcome to my web server”
+  - name: Ensure httpd is running
+    service:
+      name: httpd 
+      state: started
+      
+  - name: Print service facts
+    debug:
+        var: ansible_facts.services.httpd
+
+  - name: Install firewalld packages 
+    yum:
+      name: firewalld
+      state: present
+  - name: Open port 80 for http access
+    firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted 
