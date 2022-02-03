@@ -1,0 +1,11 @@
+---
+controls:
+  hosts:
+    control.example.com:
+nodes:
+  hosts:
+    node1.example.com:
+    node2.example.com:
+grub:
+  hosts:
+    node1.example.com:

@@ -1,0 +1,22 @@
+---
+- name: Remove httpd webserver whith testfile and close port
+  hosts: nodes
+  become: yes
+  tasks:
+  - name: Remove apache packages 
+    yum:
+      name: httpd
+      state: absent
+  - name: Remove file /var/www/html/index.html
+    file:
+      path: "/var/www/html/index.html"
+      state: absent
+  - name: Close port 80 for http access
+    firewalld:
+      service: http
+      permanent: yes
+      state: disabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted 
