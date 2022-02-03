@@ -17,11 +17,10 @@
         line: '\1 biosdevname=0\2'
         backrefs: yes
 
-    - name: Install grub2-tools packages 
+    - name: Install grub2-tools packages
       yum:
         name: grub2-tools
         state: present
-      
+
     - name: Write grub configuration file
       command: grub2-mkconfig -o /boot/grub2/grub.cfg
-
