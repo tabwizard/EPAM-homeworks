@@ -15,14 +15,6 @@
     service:
       name: httpd 
       state: started
-      
-  - name: Check httpd status
-    shell: systemctl status httpd
-    register: result
-    ignore_errors: yes
-  - name: showing report
-    debug:
-     var: result
      
   - name: Install firewalld packages 
     yum:
