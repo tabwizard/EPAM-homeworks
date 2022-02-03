@@ -31,7 +31,7 @@ Encryption successful
         name: "{{ item.name }}"
         home: "{{ item.home }}"
         comment: "{{ item.comment }}"
-        password: "{{ item.password }}"
+        password: "{{ item.password | password_hash('sha512') }}"
         update_password: on_create
       loop:
         - name: Alice
@@ -69,5 +69,5 @@ Encryption successful
 Запустим плейбук на выполнение командой:
 
 ```bash
-ansible-playbook create_user.yml --vault-password-file vault-pass
+ansible-playbook create_users.yml --vault-password-file vault-pass
 ```
