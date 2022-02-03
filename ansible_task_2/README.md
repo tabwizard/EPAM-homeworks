@@ -10,7 +10,7 @@
 $ python -c 'import crypt; print(crypt.crypt("myPassword"))'
 $6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.
 
-$ ansible-vault encrypt_string  '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.' --vault-password-file vault-pass
+$ ansible-vault encrypt_string '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.' --vault-password-file vault-pass
 !vault |
           $ANSIBLE_VAULT;1.1;AES256
           35336161623363326536343234336536386263326163396536303932363361666234386630623833
@@ -89,5 +89,24 @@ Encryption successful
 Запустим плейбук на выполнение командой:
 
 ```bash
-ansible-playbook create_users.yml --vault-password-file vault-pass
+$ ansible-playbook create_users.yml --vault-password-file vault-pass
+
+PLAY [create users using a loop] ***********************************************************************************************************************
+
+TASK [Gathering Facts] *********************************************************************************************************************************
+ok: [node1.example.com]
+ok: [node2.example.com]
+
+TASK [create users] ************************************************************************************************************************************
+changed: [node1.example.com] => (item={'name': 'Alice', 'home': '/home/Alice', 'comment': 'Alice@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+changed: [node2.example.com] => (item={'name': 'Alice', 'home': '/home/Alice', 'comment': 'Alice@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+changed: [node1.example.com] => (item={'name': 'Bob', 'home': '/home/Bob', 'comment': 'Bob@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+changed: [node2.example.com] => (item={'name': 'Bob', 'home': '/home/Bob', 'comment': 'Bob@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+changed: [node1.example.com] => (item={'name': 'Carol', 'home': '/home/Carol', 'comment': 'Carol@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+changed: [node2.example.com] => (item={'name': 'Carol', 'home': '/home/Carol', 'comment': 'Carol@example.com', 'password': '$6$59fEJtXzyQ3cYiA/$7qdVb2WPOWqN4LMkti6abe5pk1z.7x2pILCzUHGD5RvtlFpLhi.lYw83GK.RHbd/5I5Qsai.Cgs2v0tsrphNi.'})
+
+PLAY RECAP *********************************************************************************************************************************************
+node1.example.com          : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+node2.example.com          : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
 ```
