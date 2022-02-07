@@ -1,0 +1,38 @@
+---
+- name: Install vsftpd packages
+  become: True
+  yum:
+    name: "{{ ftp_app_name }}"
+    state: present
+- name: Creating vsftpd config file
+  become: true
+  template:
+    src: config.yml.j2
+    mode: 0644
+    dest: /etc/vsftpd/vsftpd.conf
+
+- name: Create a anonymous directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /var/ftp/pub
+    state: directory
+    mode: '0655'
+- name: Create a anonymous upload directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /var/ftp/pub/upload
+    state: directory
+    mode: '0777'
+#- name: Recursively change ownership of a directory
+  #ansible.builtin.file:
+    #path: /var/ftp
+    #state: directory
+    #recurse: yes
+    #owner: nobody
+    #group: nobody
+- name: Ensure vsftpd is running
+  become: True
+  service:
+    name: "{{ ftp_service }}"
+    state: started
+    enabled: true

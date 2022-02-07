@@ -1,0 +1,25 @@
+---
+- name: Install firewalld packages
+  become: true
+  yum:
+    name: "{{ firewall_app_name }}"
+    state: present
+- name: Open port 21 for ftp access
+  become: true
+  firewalld:
+    service: "{{ ftp_port }}"
+    permanent: yes
+    state: enabled
+  notify: Restart firewalld
+- name: Open port 40000:50000 for passive ftp access
+  become: true
+  firewalld:
+    port: 40000-50000/tcp
+    permanent: yes
+    state: enabled
+  notify: Restart firewalld
+- name: Add the ip_conntrack_ftp module
+  become: true
+  modprobe:
+    name: ip_conntrack_ftp
+    state: present

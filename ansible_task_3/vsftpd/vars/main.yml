@@ -1,0 +1,6 @@
+---
+# vars file for vsftpd
+anon_enable: 'YES'
+anon_upload_enable: 'YES'
+anon_root: /var/ftp/pub
+no_anon_pass: 'YES'

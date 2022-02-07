@@ -1,0 +1,10 @@
+---
+# defaults file for vsftpd
+ftp_app_name: vsftpd
+ftp_service: vsftpd
+ftp_port: ftp
+firewall_app_name: firewalld
+firewall_service: firewalld
+anon_path:
+  - /var/ftp/pub
+  - /var/ftp/pub/upload

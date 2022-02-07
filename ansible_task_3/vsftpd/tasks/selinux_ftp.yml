@@ -1,0 +1,20 @@
+- name: install required selinux tools
+  become: true
+  yum:
+    name: policycoreutils-python-utils
+    state: present
+- name: set selinux boolean
+  become: true
+  seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+- name: manage selinux settings
+  become: true
+  sefcontext:
+    target: /var/ftp/pub(/.*)?
+    setype: public_content_rw_t
+    state: present
+  loop: "{{ anon_path }}"
+  notify:
+    - run restorecon

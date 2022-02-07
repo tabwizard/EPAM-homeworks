@@ -1,0 +1,12 @@
+---
+# handlers file for httpd
+- name: Restart firewalld
+  become: true
+  service:
+    name: "{{ firewall_service }}"
+    state: restarted
+    enabled: true
+  when: (ansible_virtualization_type != 'docker') and
+        (ansible_virtualization_type != 'kvm')
+- name: run restorecon
+  command: restorecon -vR /var/ftp/pub

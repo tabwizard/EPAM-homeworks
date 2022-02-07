@@ -1,0 +1,3 @@
+---
+# vars file for httpd
+var1: "some variable from vars"

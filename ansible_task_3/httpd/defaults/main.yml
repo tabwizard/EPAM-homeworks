@@ -1,0 +1,7 @@
+---
+# defaults file for httpd
+http_app_name: httpd
+http_service: httpd
+http_port: http
+firewall_app_name: firewalld
+firewall_service: firewalld

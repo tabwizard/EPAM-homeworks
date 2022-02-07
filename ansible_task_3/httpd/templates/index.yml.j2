@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <title>Apache</title>
+ </head>
+ <body>
+
+  <p>Welcome to my web server<br>
+    "{{ var1 }}"<br>
+    Ip: "{{ ansible_facts['eth1']['ipv4']['address'] }}"</p>
+

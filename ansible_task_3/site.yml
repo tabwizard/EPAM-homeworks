@@ -1,0 +1,6 @@
+---
+- name: Role Install Apache
+  hosts: all
+  roles:
+    - httpd 
+    - vsftpd

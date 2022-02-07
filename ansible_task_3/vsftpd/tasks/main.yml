@@ -1,0 +1,5 @@
+---
+# tasks file for vsftpd
+- import_tasks: vsftpd_enable.yml
+- import_tasks: firewalld_enable.yml
+- import_tasks: selinux_ftp.yml

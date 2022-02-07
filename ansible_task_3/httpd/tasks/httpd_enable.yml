@@ -1,0 +1,17 @@
+---
+- name: Install apache packages
+  become: True
+  yum:
+    name: "{{ http_app_name }}"
+    state: present
+- name: Creating a file /var/www/html/index.html with content
+  become: true
+  template:
+    src: index.yml.j2
+    mode: 0644
+    dest: /var/www/html/index.html
+- name: Ensure httpd is running
+  become: True
+  service:
+    name: "{{ http_service }}"
+    state: started
