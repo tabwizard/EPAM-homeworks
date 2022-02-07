@@ -1,4 +1,4 @@
-Role Name
+vsftpd
 =========
 
 This role sets up an anonymous vsftpd server and open port

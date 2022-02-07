@@ -1,4 +1,4 @@
-Role Name
+httpd
 =========
 
 This role sets up an httpd webserver whith testfile and open port
