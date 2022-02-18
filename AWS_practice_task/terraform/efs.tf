@@ -8,6 +8,6 @@ resource "aws_efs_file_system" "wordpress-efs" {
     transition_to_ia = "AFTER_30_DAYS"
   }
   tags = {
-    Name = "${local.name}-efs"
+    Name = "${var.name}-efs"
   }
 }

@@ -3,12 +3,12 @@
 ################################################################################
 
 resource "aws_security_group" "wordpress-sg" {
-  name        = "${local.name}-sg"
+  name        = "${var.name}-sg"
   description = "Allow SSH, HTTP, HTTPS inbound traffic"
   vpc_id      = "${aws_vpc.wordpress-vpc.id}"
 
   dynamic "ingress" {
-    for_each = ["80", "443", "22"]
+    for_each = ["80", "443"]
     content {
       from_port   = ingress.value
       to_port     = ingress.value
@@ -16,13 +16,17 @@ resource "aws_security_group" "wordpress-sg" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-
+  ingress {
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["${var.ssh_access_ip}"]
+  }
   egress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
   }
 }
 
@@ -40,8 +44,6 @@ resource "aws_security_group" "alb-sg" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-
-  # Allow all outbound traffic.
   egress {
     from_port   = 0
     to_port     = 0
@@ -59,7 +61,7 @@ resource "aws_vpc" "wordpress-vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "${local.name}-vpc"
+    Name = "${var.name}-vpc"
   }
 }
 
@@ -67,23 +69,14 @@ resource "aws_vpc" "wordpress-vpc" {
 # Subnets 
 ################################################################################
 
-resource "aws_subnet" "wordpress-subnet-2a" {
+resource "aws_subnet" "wordpress-subnet" {     # -2a
+  count             = length(var.az)
   vpc_id            = aws_vpc.wordpress-vpc.id
-  cidr_block        = "10.2.1.0/24"
-  availability_zone = "${local.region}a"
+  cidr_block        = "${var.subnet_cidr[count.index]}"
+  availability_zone = "${var.region}${var.az[count.index]}"
   map_public_ip_on_launch = "true"
   tags = {
-    Name = "${local.name}-subnet-2a"
-  }
-}
-
-resource "aws_subnet" "wordpress-subnet-2b" {
-  vpc_id            = aws_vpc.wordpress-vpc.id
-  cidr_block        = "10.2.2.0/24"
-  availability_zone = "${local.region}b"
-  map_public_ip_on_launch = "true"
-  tags = {
-    Name = "${local.name}-subnet-2b"
+    Name = "${var.name}-subnet-2${var.az[count.index]}"
   }
 }
 
@@ -95,11 +88,11 @@ resource "aws_internet_gateway" "wordpress-gw" {
   vpc_id = "${aws_vpc.wordpress-vpc.id}"
 
   tags = {
-    Name = "${local.name}-gw"
+    Name = "${var.name}-gw"
   }
 }
 
-/* Routing table for private subnets */
+/* Routing table for default internet gateway */
 resource "aws_route_table" "wordpress-route-table" {
   vpc_id = "${aws_vpc.wordpress-vpc.id}"
   route {
@@ -107,17 +100,13 @@ resource "aws_route_table" "wordpress-route-table" {
     gateway_id = "${aws_internet_gateway.wordpress-gw.id}"
   }
   tags = {
-    Name = "${local.name}-route-table"
+    Name = "${var.name}-route-table"
   }
 }
 
 /* Route table associations */
-resource "aws_route_table_association" "subnet-2a" {
-  subnet_id      = "${aws_subnet.wordpress-subnet-2a.id}"
+resource "aws_route_table_association" "subnet-association" {
+  count          = length(var.az)
+  subnet_id      = "${aws_subnet.wordpress-subnet[count.index].id}"
   route_table_id = "${aws_route_table.wordpress-route-table.id}"
 }
-resource "aws_route_table_association" "subnet-2b" {
-  subnet_id      = "${aws_subnet.wordpress-subnet-2b.id}"
-  route_table_id = "${aws_route_table.wordpress-route-table.id}"
-}
-

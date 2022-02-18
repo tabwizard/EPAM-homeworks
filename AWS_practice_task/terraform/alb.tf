@@ -19,22 +19,17 @@ resource "aws_alb_target_group" "alb-tg" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "tgr_attachment-a" {
+resource "aws_lb_target_group_attachment" "tgr_attachment" {
+  count             = length(var.az)
   target_group_arn = aws_alb_target_group.alb-tg.arn
-  target_id        = aws_instance.wordpress-a[0].id
-  port             = 80
-}
-
-resource "aws_lb_target_group_attachment" "tgr_attachment-b" {
-  target_group_arn = aws_alb_target_group.alb-tg.arn
-  target_id        = aws_instance.wordpress-b[0].id
+  target_id        = aws_instance.wordpress[count.index].id
   port             = 80
 }
 
 resource "aws_alb" "alb-main" {
   name            = "wordpress-alb"
   depends_on      = [aws_vpc.wordpress-vpc]
-  subnets         = [aws_subnet.wordpress-subnet-2a.id, aws_subnet.wordpress-subnet-2b.id]
+  subnets         = [aws_subnet.wordpress-subnet[0].id, aws_subnet.wordpress-subnet[1].id]
   security_groups = [aws_security_group.alb-sg.id]
 }
 
