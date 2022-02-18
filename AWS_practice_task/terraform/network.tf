@@ -52,12 +52,30 @@ resource "aws_security_group" "alb-sg" {
   }
 }
 
+resource "aws_security_group" "efs-sg" {
+   name = "efs-sg"
+   description= "Allos inbound efs traffic from ec2"
+   vpc_id = "${aws_vpc.wordpress-vpc.id}"
+
+   ingress {
+     security_groups = [aws_security_group.wordpress-sg.id]
+     from_port = 2049
+     to_port = 2049 
+     protocol = "tcp"
+   }     
+   egress {
+     security_groups = [aws_security_group.wordpress-sg.id]
+     from_port = 0
+     to_port = 0
+     protocol = "-1"
+   }
+ }
 ################################################################################
 # VPC 
 ################################################################################
 
 resource "aws_vpc" "wordpress-vpc" {
-  cidr_block           = "10.2.0.0/16"
+  cidr_block           = "${var.vpc_cidr}"
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
@@ -69,7 +87,7 @@ resource "aws_vpc" "wordpress-vpc" {
 # Subnets 
 ################################################################################
 
-resource "aws_subnet" "wordpress-subnet" {     # -2a
+resource "aws_subnet" "wordpress-subnet" {  
   count             = length(var.az)
   vpc_id            = aws_vpc.wordpress-vpc.id
   cidr_block        = "${var.subnet_cidr[count.index]}"
