@@ -27,3 +27,27 @@ variable "vpc_cidr" {
   type = string
   default = "10.2.0.0/16"
 }
+
+variable "key_name" {
+  type = string
+  default = "aws"
+}
+
+variable "db_admin" {
+  description = "The dbadmin username"
+  type = string
+  default = "dbadmin"
+}
+ 
+variable "db_password" {
+  description = "The dbadmin password"
+  type = string
+  sensitive = true
+  default = "dbpassword123"
+}
+ 
+variable "db_name" {
+  description = "The database name"
+  type = string
+  default = "wordpressdb"
+}

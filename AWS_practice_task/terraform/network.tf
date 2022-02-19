@@ -1,76 +1,4 @@
 ################################################################################
-# Security group
-################################################################################
-
-resource "aws_security_group" "wordpress-sg" {
-  name        = "${var.name}-sg"
-  description = "Allow SSH, HTTP, HTTPS inbound traffic"
-  vpc_id      = "${aws_vpc.wordpress-vpc.id}"
-
-  dynamic "ingress" {
-    for_each = ["80", "443"]
-    content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-  ingress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["${var.ssh_access_ip}"]
-  }
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "alb-sg" {
-  name        = "alb-sg"
-  description = "Allow HTTP, HTTPS  load balancer security group"
-  vpc_id      = "${aws_vpc.wordpress-vpc.id}"
-
-  dynamic "ingress" {
-    for_each = ["80", "443"]
-    content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "efs-sg" {
-   name = "efs-sg"
-   description= "Allos inbound efs traffic from ec2"
-   vpc_id = "${aws_vpc.wordpress-vpc.id}"
-
-   ingress {
-     security_groups = [aws_security_group.wordpress-sg.id]
-     from_port = 2049
-     to_port = 2049 
-     protocol = "tcp"
-   }     
-   egress {
-     security_groups = [aws_security_group.wordpress-sg.id]
-     from_port = 0
-     to_port = 0
-     protocol = "-1"
-   }
- }
-################################################################################
 # VPC 
 ################################################################################
 
@@ -98,6 +26,13 @@ resource "aws_subnet" "wordpress-subnet" {
   }
 }
 
+resource "aws_db_subnet_group" "wordpress-db-subnet" {
+  name       = "wordpress-db-subnet"
+  subnet_ids = [aws_subnet.wordpress-subnet[0].id, aws_subnet.wordpress-subnet[1].id]
+  tags = {
+    Name = "wordpress-db-subnet"
+  }
+}
 ################################################################################
 # Internet gateway and Routing
 ################################################################################
@@ -110,7 +45,7 @@ resource "aws_internet_gateway" "wordpress-gw" {
   }
 }
 
-/* Routing table for default internet gateway */
+#  Routing table for default internet gateway
 resource "aws_route_table" "wordpress-route-table" {
   vpc_id = "${aws_vpc.wordpress-vpc.id}"
   route {
@@ -122,7 +57,7 @@ resource "aws_route_table" "wordpress-route-table" {
   }
 }
 
-/* Route table associations */
+#  Route table associations 
 resource "aws_route_table_association" "subnet-association" {
   count          = length(var.az)
   subnet_id      = "${aws_subnet.wordpress-subnet[count.index].id}"
