@@ -21,22 +21,3 @@ resource "local_file" "private_key_pem" {
   content  = tls_private_key.aws_key.private_key_pem
   filename = "./keys/${var.key_name}.pem"
 }
-
-resource "null_resource" "chmod" {
-  depends_on = [local_file.private_key_pem]
-
-  triggers = {
-    key = tls_private_key.aws_key.private_key_pem
-  }
-
-  provisioner "local-exec" {
-    command = "chmod 600 ./keys/${var.key_name}.pem"
-  }
-}
-
-resource "null_resource" "delete_folder" {
-  provisioner "local-exec" {
-    when    = destroy
-    command = "rm -rf ./keys"
-  }
-}
