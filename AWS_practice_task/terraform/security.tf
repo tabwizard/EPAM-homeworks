@@ -63,7 +63,7 @@ resource "aws_security_group" "alb-sg" {
 #  security group for access to EFS from EC2
 resource "aws_security_group" "efs-sg" {
   name        = "${var.name}-efs-sg"
-  description = "Allos inbound efs traffic from ec2"
+  description = "Allow inbound efs traffic from ec2"
   vpc_id      = "${aws_vpc.wordpress-vpc.id}"
 
   ingress {
