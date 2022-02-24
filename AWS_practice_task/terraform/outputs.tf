@@ -6,7 +6,7 @@ output "check_server_ip" {
   value = "http://${aws_alb.alb-main.dns_name}/ip.php"
 }
 
-output "instance_from_installed_wordpress" {
+output "wordpress_installed_from_instance" {
   value = "http://${aws_alb.alb-main.dns_name}/wp_installed.html"
 }
 
