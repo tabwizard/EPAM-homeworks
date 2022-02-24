@@ -6,6 +6,10 @@ output "check_server_ip" {
   value = "http://${aws_alb.alb-main.dns_name}/ip.php"
 }
 
+output "instance_from_installed_wordpress" {
+  value = "http://${aws_alb.alb-main.dns_name}/wp_installed.html"
+}
+
 output "application_load_balancer_dns_name" {
   value = "${aws_alb.alb-main.dns_name}"
 }
