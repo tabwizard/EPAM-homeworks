@@ -5,8 +5,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:14-alpine
+FROM nginx:1.20
 WORKDIR /app
-COPY --from=builder /frontend .
-RUN npm install -g serve
-CMD [ "serve", "-s", "build" ]
+COPY --from=builder /frontend/build .
+ADD demo.conf /etc/nginx/conf.d/default.conf
