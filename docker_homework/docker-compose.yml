@@ -3,8 +3,6 @@ version: "3.9"
 services:
   database:
     build: ./database
-    ports:
-      - "5432:5432"
     networks:
       back:
         ipv4_address: 172.16.238.4
@@ -13,14 +11,12 @@ services:
 
   backend:
     build: ./lib_catalog
-    ports:
-      - "8000:8000"
     depends_on:
       - database
     networks:
       back:
         ipv4_address: 172.16.238.3
-      default:
+
 
   frontend:
     build: ./frontend
@@ -30,10 +26,12 @@ services:
       - backend
       - database
     networks:
+      back:
+        ipv4_address: 172.16.238.2
       default:
 
 networks:
-#Internal-only network for backend and database
+#Internal-only network for access to backend and database
   back:
     driver: bridge
     internal: true

@@ -37,6 +37,7 @@ WORKDIR /frontend
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN sed -i 's/http:\/\/localhost:8000//g' ./src/*.js
 RUN npm run build
 
 FROM nginx:1.20
@@ -80,8 +81,6 @@ version: "3.9"
 services:
   database:
     build: ./database
-    ports:
-      - "5432:5432"
     networks:
       back:
         ipv4_address: 172.16.238.4
@@ -90,14 +89,12 @@ services:
 
   backend:
     build: ./lib_catalog
-    ports:
-      - "8000:8000"
     depends_on:
       - database
     networks:
       back:
         ipv4_address: 172.16.238.3
-      default:
+
 
   frontend:
     build: ./frontend
@@ -107,10 +104,12 @@ services:
       - backend
       - database
     networks:
+      back:
+        ipv4_address: 172.16.238.2
       default:
 
 networks:
-#Internal-only network for backend and database
+#Internal-only network for access to backend and database
   back:
     driver: bridge
     internal: true
@@ -118,9 +117,10 @@ networks:
      driver: default
      config:
        - subnet: 172.16.238.0/24
-#External network for frontend and backend
+#External network for frontend
   default:
     driver: bridge
+
 ```
 
 Запустим всё это хозяйство, убедимся, что всё работает как надо, данные вносятся, сохраняются и благодаря подключенному внешнему тому не исчезают при перезапуске контейнеров.
